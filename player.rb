@@ -18,7 +18,8 @@ class Player
   end
 
   def points
-    @cards.map { |card| card.points }.sum + 10 * @cards.count('Т')
+    points = @cards.map { |card| card.points }.sum
+    points + 10 if @cards.include?('Т') && points + 10 <= 21
   end
 
   def add_card
