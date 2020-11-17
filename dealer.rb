@@ -1,3 +1,5 @@
+require_relative 'player'
+
 class Dealer < Player
 
   def initialize(card_holder)
