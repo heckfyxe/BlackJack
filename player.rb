@@ -13,6 +13,10 @@ class Player
     puts @cards.map { |card| card.name }.join(' ')
   end
 
+  def show_points
+    puts "#{name}: #{points} points"
+  end
+
   def points
     @cards.map { |card| card.points }.sum + 10 * @cards.count('Т')
   end
