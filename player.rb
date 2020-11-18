@@ -1,7 +1,7 @@
 require_relative 'rules'
 
 class Player
-  attr_reader :name, :cards
+  attr_reader :name, :cards, :money
 
   def initialize(name, card_holder)
     @name = name
@@ -13,6 +13,10 @@ class Player
   def show_cards
     print "#{@name}: "
     puts @cards.map(&:name).join(' ')
+  end
+
+  def show_money
+    puts "#{name}: #{money} долларов"
   end
 
   def prepare_for_new_game
@@ -30,7 +34,7 @@ class Player
   end
 
   def add_card
-    raise 'Cannot add fourth card' if @cards.length == 3
+    raise 'Нельзя добавить четвёртую карту' if @cards.length == 3
 
     @cards << @card_holder.pop
   end
