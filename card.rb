@@ -10,6 +10,7 @@ class Card
     rank + suit
   end
 
+  # rubocop:disable Style/CaseLikeIf
   def points
     if ('2'..'10').include?(rank)
       rank.to_i
@@ -19,4 +20,6 @@ class Card
       10
     end
   end
+  # rubocop:enable Style/CaseLikeIf
+
 end

@@ -1,16 +1,22 @@
+require_relative 'rules'
+
 class Player
   attr_reader :name, :cards
 
   def initialize(name, card_holder)
     @name = name
     @card_holder = card_holder
-    @cards = Array.new(2) { card_holder.pop }
+    prepare_for_new_game
     @money = Rules::BANK
   end
 
   def show_cards
     print "#{@name}: "
-    puts @cards.map { |card| card.name }.join(' ')
+    puts @cards.map(&:name).join(' ')
+  end
+
+  def prepare_for_new_game
+    @cards = Array.new(2) { @card_holder.pop }
   end
 
   def show_points
@@ -18,12 +24,14 @@ class Player
   end
 
   def points
-    points = @cards.map { |card| card.points }.sum
-    points + 10 if @cards.include?('Т') && points + 10 <= 21
+    points = @cards.map(&:points).sum
+    points += 10 if @cards.include?('Т') && points + 10 <= 21
+    points
   end
 
   def add_card
     raise 'Cannot add fourth card' if @cards.length == 3
+
     @cards << @card_holder.pop
   end
 

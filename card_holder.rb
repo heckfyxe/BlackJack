@@ -2,7 +2,7 @@ require_relative 'card'
 
 class CardHolder
   RANKS = Array.new(13) { |i| i + 2 <= 10 ? (i + 2).to_s : %w[В Д К T][i - 10] }
-  SUITS = %w[♦ ♣ ♥ ♠]
+  SUITS = %w[♦ ♣ ♥ ♠].freeze
 
   def initialize
     @cards = []
