@@ -1,5 +1,5 @@
 require_relative 'card_holder'
-require_relative 'user'
+require_relative 'player'
 require_relative 'dealer'
 
 class Main
@@ -8,7 +8,7 @@ class Main
     @card_holder.shuffle_cards
 
     @dealer = Dealer.new(@card_holder)
-    @user = User.new(username, @card_holder)
+    @user = Player.new(username, @card_holder)
     @players = [@user, @dealer]
   end
 
@@ -62,12 +62,23 @@ class Main
     @dealer.add_card if @dealer.cards.length < 3 && @dealer.points < 17
   end
 
-  def show_players_status
+  def show_players_status(hide_dealer_status: true)
     @players.each do |player|
-      player.show_cards
-      player.show_money
-      player.show_points
+      need_hide = player.is_a?(Dealer) && hide_dealer_status
+      cards = need_hide ? player_cards_as_hidden(player) : player_cards(player)
+      puts "#{player.name}: #{cards}"
+      puts "#{player.name}: #{player.money} долларов"
+      puts "#{player.name}: #{player.points} points" unless need_hide
     end
+  end
+
+  def player_cards(player)
+    player.cards.map(&:name).join(' ')
+  end
+
+  def player_cards_as_hidden(player)
+    cards_length = player.cards.length
+    Array.new(cards_length) { '**' }.join(' ')
   end
 
   def prepare_for_new_game
@@ -106,12 +117,7 @@ class Main
 
   def show_winner(winner)
     puts winner.nil? ? 'Ничья' : "#{winner.name} выиграл!"
-    @players.each do |player|
-      print "#{player.name}: "
-      player.cards.each { |card| print "#{card.name} " }
-      puts "#{player.points} баллов"
-      player.show_money
-    end
+    show_players_status(hide_dealer_status: true)
   end
 end
 

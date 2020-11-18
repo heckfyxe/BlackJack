@@ -10,21 +10,8 @@ class Player
     @money = Rules::BANK
   end
 
-  def show_cards
-    print "#{@name}: "
-    puts @cards.map(&:name).join(' ')
-  end
-
-  def show_money
-    puts "#{name}: #{money} долларов"
-  end
-
   def prepare_for_new_game
     @cards = Array.new(2) { @card_holder.pop }
-  end
-
-  def show_points
-    puts "#{name}: #{points} points"
   end
 
   def points
