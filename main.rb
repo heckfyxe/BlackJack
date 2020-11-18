@@ -5,6 +5,8 @@ require_relative 'dealer'
 class Main
   def initialize(username)
     @card_holder = CardHolder.new
+    @card_holder.shuffle_cards
+
     @dealer = Dealer.new(@card_holder)
     @user = User.new(username, @card_holder)
     @players = [@user, @dealer]

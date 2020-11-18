@@ -1,4 +1,13 @@
 class Card
+  RANKS = Array.new(13) { |i| i + 2 <= 10 ? (i + 2).to_s : %w[В Д К T][i - 10] }
+  SUITS = %w[♦ ♣ ♥ ♠].freeze
+
+  def self.all_combinations
+    RANKS.collect_concat do |rank|
+      SUITS.collect { |suit| Card.new(rank, suit) }
+    end
+  end
+
   attr_reader :rank, :suit
 
   def initialize(rank, suit)
@@ -21,5 +30,4 @@ class Card
     end
   end
   # rubocop:enable Style/CaseLikeIf
-
 end
