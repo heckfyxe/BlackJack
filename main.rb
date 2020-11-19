@@ -1,48 +1,27 @@
-require_relative 'card_holder'
-require_relative 'player'
 require_relative 'dealer'
+require_relative 'game'
 
-class Main
-  def initialize(username)
-    @card_holder = CardHolder.new
-    @card_holder.shuffle_cards
-
-    @dealer = Dealer.new(@card_holder)
-    @user = Player.new(username, @card_holder)
-    @players = [@user, @dealer]
+class TextInterface
+  def initialize(game)
+    @game = game
   end
 
   def launch_game
     loop do
       show_players_status
-      until game_end?
+      until @game.players_hands_full?
         command = user_command
-        next if command == 2 && !add_card(@user)
+        puts('Нельзя довавить карту!') if command == 2 && !@game.add_card(@game.user)
         break if command == 3
 
-        dealer_turn
+        @game.dealer_turn
       end
-      do_rates
+      @game.do_rates
+      winner = @game.winner
       winner&.add_money
       show_winner(winner)
       perform_user_play_again
     end
-  end
-
-  def do_rates
-    @players.each(&:do_rate)
-  end
-
-  def game_end?
-    @user.cards.length == 3 && @dealer.cards.length == 3
-  end
-
-  def add_card(user)
-    user.add_card
-    true
-  rescue RuntimeError => e
-    puts e.message
-    false
   end
 
   def user_command
@@ -58,32 +37,23 @@ class Main
     retry
   end
 
-  def dealer_turn
-    @dealer.add_card if @dealer.cards.length < 3 && @dealer.points < 17
+  def show_winner(winner)
+    puts winner.nil? ? 'Ничья' : "#{winner.name} выиграл!"
+    show_players_status(hide_dealer_status: false)
   end
 
   def show_players_status(hide_dealer_status: true)
-    @players.each do |player|
+    @game.players.each do |player|
       need_hide = player.is_a?(Dealer) && hide_dealer_status
-      cards = need_hide ? player_cards_as_hidden(player) : player_cards(player)
+      cards = need_hide ? @game.player_cards_as_hidden(player) : @game.player_cards(player)
       puts "#{player.name}: #{cards}"
       puts "#{player.name}: #{player.money} долларов"
       puts "#{player.name}: #{player.points} points" unless need_hide
     end
   end
 
-  def player_cards(player)
-    player.cards.map(&:name).join(' ')
-  end
-
-  def player_cards_as_hidden(player)
-    cards_length = player.cards.length
-    Array.new(cards_length) { '**' }.join(' ')
-  end
-
-  def prepare_for_new_game
-    @card_holder.shuffle_cards
-    @players.each(&:prepare_for_new_game)
+  def perform_user_play_again
+    want_user_play_again? ? @game.prepare_for_new_game : exit
   end
 
   def want_user_play_again?
@@ -101,26 +71,10 @@ class Main
     puts e.message
     retry
   end
-
-  def perform_user_play_again
-    want_user_play_again? ? prepare_for_new_game : exit
-  end
-
-  def winner
-    points = @players.collect { |player| player.points <= 21 ? (player.points - 21).abs : 1000 }
-    min_point, max_point = points.minmax
-    return nil if min_point == max_point
-
-    winner_index = points.index(min_point)
-    @players[winner_index]
-  end
-
-  def show_winner(winner)
-    puts winner.nil? ? 'Ничья' : "#{winner.name} выиграл!"
-    show_players_status(hide_dealer_status: true)
-  end
 end
 
 print 'Как тебя зовут? '
 name = gets.chomp
-Main.new(name).launch_game
+game = Game.new(name)
+interface = TextInterface.new(game)
+interface.launch_game

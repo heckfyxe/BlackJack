@@ -1,7 +1,7 @@
 require_relative 'player'
 
 class Dealer < Player
-  def initialize(card_holder)
-    super('Дилер', card_holder)
+  def initialize
+    super('Дилер')
   end
 end

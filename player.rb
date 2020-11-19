@@ -1,29 +1,38 @@
 require_relative 'rules'
+require_relative 'hand'
 
 class Player
-  attr_reader :name, :cards, :money
+  attr_reader :name, :money
 
-  def initialize(name, card_holder)
+  def initialize(name)
     @name = name
-    @card_holder = card_holder
-    prepare_for_new_game
+    @hand = Hand.new
     @money = Rules::BANK
   end
 
-  def prepare_for_new_game
-    @cards = Array.new(2) { @card_holder.pop }
+  def prepare_for_new_game(cards)
+    raise 'Нужно две карты' if cards.length != 2
+
+    @hand.remove_all_cards
+    cards.each do |card|
+      @hand.add_card(card)
+    end
+  end
+
+  def cards
+    @hand.cards
   end
 
   def points
-    points = @cards.map(&:points).sum
-    points += 10 if @cards.include?('Т') && points + 10 <= 21
-    points
+    @hand.points
   end
 
-  def add_card
-    raise 'Нельзя добавить четвёртую карту' if @cards.length == 3
+  def hand_full?
+    @hand.full?
+  end
 
-    @cards << @card_holder.pop
+  def add_card(card)
+    @hand.add_card(card)
   end
 
   def do_rate

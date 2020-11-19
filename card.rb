@@ -1,5 +1,5 @@
 class Card
-  RANKS = Array.new(13) { |i| i + 2 <= 10 ? (i + 2).to_s : %w[В Д К T][i - 10] }
+  RANKS = Array.new(13) { |i| i + 2 <= 10 ? (i + 2).to_s : %w[В Д К Т][i - 10] }
   SUITS = %w[♦ ♣ ♥ ♠].freeze
 
   def self.all_combinations
@@ -23,7 +23,7 @@ class Card
   def points
     if ('2'..'10').include?(rank)
       rank.to_i
-    elsif rank == 'T'
+    elsif rank == RANKS.last
       1
     else
       10
